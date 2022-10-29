@@ -1,0 +1,7 @@
+CUSTOM MEMORY ALLOCATOR
+
+1. Written in C using STM32CubeIDE v1.7.0 
+2. Empty project was created in IDE
+3. Tested and debugged on STM32F103C8 Bluepill using ST Link V2
+4. "custom_allocator.c" and "custom_allocator.h" can be directly used in main
+

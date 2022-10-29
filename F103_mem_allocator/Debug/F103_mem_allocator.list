@@ -1,0 +1,616 @@
+
+F103_mem_allocator.elf:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .isr_vector   00000130  08000000  08000000  00010000  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  1 .text         0000033c  08000130  08000130  00010130  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .rodata       00000000  0800046c  08000474  00010474  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  3 .ARM.extab    00000000  0800046c  0800046c  00010474  2**0
+                  CONTENTS
+  4 .ARM          00000000  0800046c  0800046c  00010474  2**0
+                  CONTENTS
+  5 .preinit_array 00000000  0800046c  08000474  00010474  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  6 .init_array   00000004  0800046c  0800046c  0001046c  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  7 .fini_array   00000004  08000470  08000470  00010470  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  8 .data         00000000  20000000  20000000  00010474  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  9 .bss          0000009c  20000000  08000474  00020000  2**2
+                  ALLOC
+ 10 ._user_heap_stack 00000604  2000009c  08000474  0002009c  2**0
+                  ALLOC
+ 11 .ARM.attributes 00000029  00000000  00000000  00010474  2**0
+                  CONTENTS, READONLY
+ 12 .debug_info   00001518  00000000  00000000  0001049d  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 13 .debug_abbrev 00000413  00000000  00000000  000119b5  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 14 .debug_aranges 00000078  00000000  00000000  00011dc8  2**3
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 15 .debug_ranges 00000050  00000000  00000000  00011e40  2**3
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 16 .debug_macro  00002017  00000000  00000000  00011e90  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 17 .debug_line   00000d95  00000000  00000000  00013ea7  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 18 .debug_str    000080ab  00000000  00000000  00014c3c  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 19 .comment      00000053  00000000  00000000  0001cce7  2**0
+                  CONTENTS, READONLY
+ 20 .debug_frame  000000fc  00000000  00000000  0001cd3c  2**2
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+
+Disassembly of section .text:
+
+08000130 <__do_global_dtors_aux>:
+ 8000130:	b510      	push	{r4, lr}
+ 8000132:	4c05      	ldr	r4, [pc, #20]	; (8000148 <__do_global_dtors_aux+0x18>)
+ 8000134:	7823      	ldrb	r3, [r4, #0]
+ 8000136:	b933      	cbnz	r3, 8000146 <__do_global_dtors_aux+0x16>
+ 8000138:	4b04      	ldr	r3, [pc, #16]	; (800014c <__do_global_dtors_aux+0x1c>)
+ 800013a:	b113      	cbz	r3, 8000142 <__do_global_dtors_aux+0x12>
+ 800013c:	4804      	ldr	r0, [pc, #16]	; (8000150 <__do_global_dtors_aux+0x20>)
+ 800013e:	f3af 8000 	nop.w
+ 8000142:	2301      	movs	r3, #1
+ 8000144:	7023      	strb	r3, [r4, #0]
+ 8000146:	bd10      	pop	{r4, pc}
+ 8000148:	20000000 	.word	0x20000000
+ 800014c:	00000000 	.word	0x00000000
+ 8000150:	08000454 	.word	0x08000454
+
+08000154 <frame_dummy>:
+ 8000154:	b508      	push	{r3, lr}
+ 8000156:	4b03      	ldr	r3, [pc, #12]	; (8000164 <frame_dummy+0x10>)
+ 8000158:	b11b      	cbz	r3, 8000162 <frame_dummy+0xe>
+ 800015a:	4903      	ldr	r1, [pc, #12]	; (8000168 <frame_dummy+0x14>)
+ 800015c:	4803      	ldr	r0, [pc, #12]	; (800016c <frame_dummy+0x18>)
+ 800015e:	f3af 8000 	nop.w
+ 8000162:	bd08      	pop	{r3, pc}
+ 8000164:	00000000 	.word	0x00000000
+ 8000168:	20000004 	.word	0x20000004
+ 800016c:	08000454 	.word	0x08000454
+
+08000170 <init_custom_memory>:
+ * 		    updates memory size and pointer to 0
+ * @param : None
+ * @retval: None
+ */
+void init_custom_memory(void)
+{
+ 8000170:	b580      	push	{r7, lr}
+ 8000172:	af00      	add	r7, sp, #0
+	memset(custom_memory, 0, sizeof(custom_memory));
+ 8000174:	2228      	movs	r2, #40	; 0x28
+ 8000176:	2100      	movs	r1, #0
+ 8000178:	4805      	ldr	r0, [pc, #20]	; (8000190 <init_custom_memory+0x20>)
+ 800017a:	f000 f963 	bl	8000444 <memset>
+	memory_size = MEM_SIZE-1;
+ 800017e:	4b05      	ldr	r3, [pc, #20]	; (8000194 <init_custom_memory+0x24>)
+ 8000180:	2209      	movs	r2, #9
+ 8000182:	601a      	str	r2, [r3, #0]
+	pointer_pos = 0;
+ 8000184:	4b04      	ldr	r3, [pc, #16]	; (8000198 <init_custom_memory+0x28>)
+ 8000186:	2200      	movs	r2, #0
+ 8000188:	601a      	str	r2, [r3, #0]
+}
+ 800018a:	bf00      	nop
+ 800018c:	bd80      	pop	{r7, pc}
+ 800018e:	bf00      	nop
+ 8000190:	2000001c 	.word	0x2000001c
+ 8000194:	2000006c 	.word	0x2000006c
+ 8000198:	20000098 	.word	0x20000098
+
+0800019c <custom_malloc>:
+ * 			the if the required number of memory units are available or not
+ * @param : Number of memory units or size needed
+ * @retval: Returns address if available else returns NULL
+ */
+unsigned int* custom_malloc(unsigned int memory_units)
+{
+ 800019c:	b480      	push	{r7}
+ 800019e:	b087      	sub	sp, #28
+ 80001a0:	af00      	add	r7, sp, #0
+ 80001a2:	6078      	str	r0, [r7, #4]
+	if((memory_units > memory_size) || (pointer_pos > memory_size))
+ 80001a4:	4b24      	ldr	r3, [pc, #144]	; (8000238 <custom_malloc+0x9c>)
+ 80001a6:	681b      	ldr	r3, [r3, #0]
+ 80001a8:	687a      	ldr	r2, [r7, #4]
+ 80001aa:	429a      	cmp	r2, r3
+ 80001ac:	d805      	bhi.n	80001ba <custom_malloc+0x1e>
+ 80001ae:	4b23      	ldr	r3, [pc, #140]	; (800023c <custom_malloc+0xa0>)
+ 80001b0:	681a      	ldr	r2, [r3, #0]
+ 80001b2:	4b21      	ldr	r3, [pc, #132]	; (8000238 <custom_malloc+0x9c>)
+ 80001b4:	681b      	ldr	r3, [r3, #0]
+ 80001b6:	429a      	cmp	r2, r3
+ 80001b8:	d901      	bls.n	80001be <custom_malloc+0x22>
+	{
+		return (unsigned int*)NULL;
+ 80001ba:	2300      	movs	r3, #0
+ 80001bc:	e037      	b.n	800022e <custom_malloc+0x92>
+	}
+
+	for(int i = pointer_pos; i < (pointer_pos + memory_units); i++)
+ 80001be:	4b1f      	ldr	r3, [pc, #124]	; (800023c <custom_malloc+0xa0>)
+ 80001c0:	681b      	ldr	r3, [r3, #0]
+ 80001c2:	617b      	str	r3, [r7, #20]
+ 80001c4:	e00a      	b.n	80001dc <custom_malloc+0x40>
+	{
+		if(custom_memory[i] != 0)
+ 80001c6:	4a1e      	ldr	r2, [pc, #120]	; (8000240 <custom_malloc+0xa4>)
+ 80001c8:	697b      	ldr	r3, [r7, #20]
+ 80001ca:	f852 3023 	ldr.w	r3, [r2, r3, lsl #2]
+ 80001ce:	2b00      	cmp	r3, #0
+ 80001d0:	d001      	beq.n	80001d6 <custom_malloc+0x3a>
+		{
+			return (unsigned int*)NULL;
+ 80001d2:	2300      	movs	r3, #0
+ 80001d4:	e02b      	b.n	800022e <custom_malloc+0x92>
+	for(int i = pointer_pos; i < (pointer_pos + memory_units); i++)
+ 80001d6:	697b      	ldr	r3, [r7, #20]
+ 80001d8:	3301      	adds	r3, #1
+ 80001da:	617b      	str	r3, [r7, #20]
+ 80001dc:	4b17      	ldr	r3, [pc, #92]	; (800023c <custom_malloc+0xa0>)
+ 80001de:	681a      	ldr	r2, [r3, #0]
+ 80001e0:	687b      	ldr	r3, [r7, #4]
+ 80001e2:	441a      	add	r2, r3
+ 80001e4:	697b      	ldr	r3, [r7, #20]
+ 80001e6:	429a      	cmp	r2, r3
+ 80001e8:	d8ed      	bhi.n	80001c6 <custom_malloc+0x2a>
+		}
+	}
+
+	unsigned int *retval = &custom_memory[pointer_pos];
+ 80001ea:	4b14      	ldr	r3, [pc, #80]	; (800023c <custom_malloc+0xa0>)
+ 80001ec:	681b      	ldr	r3, [r3, #0]
+ 80001ee:	009b      	lsls	r3, r3, #2
+ 80001f0:	4a13      	ldr	r2, [pc, #76]	; (8000240 <custom_malloc+0xa4>)
+ 80001f2:	4413      	add	r3, r2
+ 80001f4:	60fb      	str	r3, [r7, #12]
+	size_table[pointer_pos] = memory_units;
+ 80001f6:	4b11      	ldr	r3, [pc, #68]	; (800023c <custom_malloc+0xa0>)
+ 80001f8:	681b      	ldr	r3, [r3, #0]
+ 80001fa:	4912      	ldr	r1, [pc, #72]	; (8000244 <custom_malloc+0xa8>)
+ 80001fc:	687a      	ldr	r2, [r7, #4]
+ 80001fe:	f841 2023 	str.w	r2, [r1, r3, lsl #2]
+	address_table[pointer_pos] = retval;
+ 8000202:	4b0e      	ldr	r3, [pc, #56]	; (800023c <custom_malloc+0xa0>)
+ 8000204:	681b      	ldr	r3, [r3, #0]
+ 8000206:	4910      	ldr	r1, [pc, #64]	; (8000248 <custom_malloc+0xac>)
+ 8000208:	68fa      	ldr	r2, [r7, #12]
+ 800020a:	f841 2023 	str.w	r2, [r1, r3, lsl #2]
+
+	for(int i = 0; i < memory_units; i++)
+ 800020e:	2300      	movs	r3, #0
+ 8000210:	613b      	str	r3, [r7, #16]
+ 8000212:	e007      	b.n	8000224 <custom_malloc+0x88>
+	{
+		pointer_pos++;
+ 8000214:	4b09      	ldr	r3, [pc, #36]	; (800023c <custom_malloc+0xa0>)
+ 8000216:	681b      	ldr	r3, [r3, #0]
+ 8000218:	3301      	adds	r3, #1
+ 800021a:	4a08      	ldr	r2, [pc, #32]	; (800023c <custom_malloc+0xa0>)
+ 800021c:	6013      	str	r3, [r2, #0]
+	for(int i = 0; i < memory_units; i++)
+ 800021e:	693b      	ldr	r3, [r7, #16]
+ 8000220:	3301      	adds	r3, #1
+ 8000222:	613b      	str	r3, [r7, #16]
+ 8000224:	693b      	ldr	r3, [r7, #16]
+ 8000226:	687a      	ldr	r2, [r7, #4]
+ 8000228:	429a      	cmp	r2, r3
+ 800022a:	d8f3      	bhi.n	8000214 <custom_malloc+0x78>
+	}
+
+	return retval;
+ 800022c:	68fb      	ldr	r3, [r7, #12]
+
+}
+ 800022e:	4618      	mov	r0, r3
+ 8000230:	371c      	adds	r7, #28
+ 8000232:	46bd      	mov	sp, r7
+ 8000234:	bc80      	pop	{r7}
+ 8000236:	4770      	bx	lr
+ 8000238:	2000006c 	.word	0x2000006c
+ 800023c:	20000098 	.word	0x20000098
+ 8000240:	2000001c 	.word	0x2000001c
+ 8000244:	20000044 	.word	0x20000044
+ 8000248:	20000070 	.word	0x20000070
+
+0800024c <custom_free>:
+ * 			initialises that memory block to 0
+ * @param : Memory address to be freed
+ * @retval: None
+ */
+void custom_free(unsigned int *ptr)
+{
+ 800024c:	b480      	push	{r7}
+ 800024e:	b087      	sub	sp, #28
+ 8000250:	af00      	add	r7, sp, #0
+ 8000252:	6078      	str	r0, [r7, #4]
+	unsigned int index      = 0;
+ 8000254:	2300      	movs	r3, #0
+ 8000256:	617b      	str	r3, [r7, #20]
+	unsigned int reset_size = 0;
+ 8000258:	2300      	movs	r3, #0
+ 800025a:	60fb      	str	r3, [r7, #12]
+
+	for(index = 0; index < memory_size; index++)
+ 800025c:	2300      	movs	r3, #0
+ 800025e:	617b      	str	r3, [r7, #20]
+ 8000260:	e009      	b.n	8000276 <custom_free+0x2a>
+	{
+		if(address_table[index] == ptr)
+ 8000262:	4a19      	ldr	r2, [pc, #100]	; (80002c8 <custom_free+0x7c>)
+ 8000264:	697b      	ldr	r3, [r7, #20]
+ 8000266:	f852 3023 	ldr.w	r3, [r2, r3, lsl #2]
+ 800026a:	687a      	ldr	r2, [r7, #4]
+ 800026c:	429a      	cmp	r2, r3
+ 800026e:	d008      	beq.n	8000282 <custom_free+0x36>
+	for(index = 0; index < memory_size; index++)
+ 8000270:	697b      	ldr	r3, [r7, #20]
+ 8000272:	3301      	adds	r3, #1
+ 8000274:	617b      	str	r3, [r7, #20]
+ 8000276:	4b15      	ldr	r3, [pc, #84]	; (80002cc <custom_free+0x80>)
+ 8000278:	681b      	ldr	r3, [r3, #0]
+ 800027a:	697a      	ldr	r2, [r7, #20]
+ 800027c:	429a      	cmp	r2, r3
+ 800027e:	d3f0      	bcc.n	8000262 <custom_free+0x16>
+ 8000280:	e000      	b.n	8000284 <custom_free+0x38>
+		{
+			break;
+ 8000282:	bf00      	nop
+		}
+	}
+
+	pointer_pos = index;
+ 8000284:	4a12      	ldr	r2, [pc, #72]	; (80002d0 <custom_free+0x84>)
+ 8000286:	697b      	ldr	r3, [r7, #20]
+ 8000288:	6013      	str	r3, [r2, #0]
+	reset_size  = size_table[index];
+ 800028a:	4a12      	ldr	r2, [pc, #72]	; (80002d4 <custom_free+0x88>)
+ 800028c:	697b      	ldr	r3, [r7, #20]
+ 800028e:	f852 3023 	ldr.w	r3, [r2, r3, lsl #2]
+ 8000292:	60fb      	str	r3, [r7, #12]
+
+	for(int i = pointer_pos; i < (pointer_pos + reset_size); i++)
+ 8000294:	4b0e      	ldr	r3, [pc, #56]	; (80002d0 <custom_free+0x84>)
+ 8000296:	681b      	ldr	r3, [r3, #0]
+ 8000298:	613b      	str	r3, [r7, #16]
+ 800029a:	e007      	b.n	80002ac <custom_free+0x60>
+	{
+		custom_memory[i] = 0;
+ 800029c:	4a0e      	ldr	r2, [pc, #56]	; (80002d8 <custom_free+0x8c>)
+ 800029e:	693b      	ldr	r3, [r7, #16]
+ 80002a0:	2100      	movs	r1, #0
+ 80002a2:	f842 1023 	str.w	r1, [r2, r3, lsl #2]
+	for(int i = pointer_pos; i < (pointer_pos + reset_size); i++)
+ 80002a6:	693b      	ldr	r3, [r7, #16]
+ 80002a8:	3301      	adds	r3, #1
+ 80002aa:	613b      	str	r3, [r7, #16]
+ 80002ac:	4b08      	ldr	r3, [pc, #32]	; (80002d0 <custom_free+0x84>)
+ 80002ae:	681a      	ldr	r2, [r3, #0]
+ 80002b0:	68fb      	ldr	r3, [r7, #12]
+ 80002b2:	441a      	add	r2, r3
+ 80002b4:	693b      	ldr	r3, [r7, #16]
+ 80002b6:	429a      	cmp	r2, r3
+ 80002b8:	d8f0      	bhi.n	800029c <custom_free+0x50>
+	}
+}
+ 80002ba:	bf00      	nop
+ 80002bc:	bf00      	nop
+ 80002be:	371c      	adds	r7, #28
+ 80002c0:	46bd      	mov	sp, r7
+ 80002c2:	bc80      	pop	{r7}
+ 80002c4:	4770      	bx	lr
+ 80002c6:	bf00      	nop
+ 80002c8:	20000070 	.word	0x20000070
+ 80002cc:	2000006c 	.word	0x2000006c
+ 80002d0:	20000098 	.word	0x20000098
+ 80002d4:	20000044 	.word	0x20000044
+ 80002d8:	2000001c 	.word	0x2000001c
+
+080002dc <main>:
+ */
+
+#include "custom_allocator.h"
+
+int main(void)
+{
+ 80002dc:	b580      	push	{r7, lr}
+ 80002de:	b08a      	sub	sp, #40	; 0x28
+ 80002e0:	af00      	add	r7, sp, #0
+	init_custom_memory();
+ 80002e2:	f7ff ff45 	bl	8000170 <init_custom_memory>
+
+	unsigned int *myptr1 = custom_malloc(5);
+ 80002e6:	2005      	movs	r0, #5
+ 80002e8:	f7ff ff58 	bl	800019c <custom_malloc>
+ 80002ec:	6178      	str	r0, [r7, #20]
+	for(int i = 0; i < 5; i++)
+ 80002ee:	2300      	movs	r3, #0
+ 80002f0:	627b      	str	r3, [r7, #36]	; 0x24
+ 80002f2:	e008      	b.n	8000306 <main+0x2a>
+	{
+		myptr1[i] = 111;
+ 80002f4:	6a7b      	ldr	r3, [r7, #36]	; 0x24
+ 80002f6:	009b      	lsls	r3, r3, #2
+ 80002f8:	697a      	ldr	r2, [r7, #20]
+ 80002fa:	4413      	add	r3, r2
+ 80002fc:	226f      	movs	r2, #111	; 0x6f
+ 80002fe:	601a      	str	r2, [r3, #0]
+	for(int i = 0; i < 5; i++)
+ 8000300:	6a7b      	ldr	r3, [r7, #36]	; 0x24
+ 8000302:	3301      	adds	r3, #1
+ 8000304:	627b      	str	r3, [r7, #36]	; 0x24
+ 8000306:	6a7b      	ldr	r3, [r7, #36]	; 0x24
+ 8000308:	2b04      	cmp	r3, #4
+ 800030a:	ddf3      	ble.n	80002f4 <main+0x18>
+	}
+
+	unsigned int *myptr2 = custom_malloc(3);
+ 800030c:	2003      	movs	r0, #3
+ 800030e:	f7ff ff45 	bl	800019c <custom_malloc>
+ 8000312:	6138      	str	r0, [r7, #16]
+	for(int i = 0; i < 3; i++)
+ 8000314:	2300      	movs	r3, #0
+ 8000316:	623b      	str	r3, [r7, #32]
+ 8000318:	e008      	b.n	800032c <main+0x50>
+	{
+		myptr2[i] = 222;
+ 800031a:	6a3b      	ldr	r3, [r7, #32]
+ 800031c:	009b      	lsls	r3, r3, #2
+ 800031e:	693a      	ldr	r2, [r7, #16]
+ 8000320:	4413      	add	r3, r2
+ 8000322:	22de      	movs	r2, #222	; 0xde
+ 8000324:	601a      	str	r2, [r3, #0]
+	for(int i = 0; i < 3; i++)
+ 8000326:	6a3b      	ldr	r3, [r7, #32]
+ 8000328:	3301      	adds	r3, #1
+ 800032a:	623b      	str	r3, [r7, #32]
+ 800032c:	6a3b      	ldr	r3, [r7, #32]
+ 800032e:	2b02      	cmp	r3, #2
+ 8000330:	ddf3      	ble.n	800031a <main+0x3e>
+	}
+
+	unsigned int *myptr3 = custom_malloc(2);
+ 8000332:	2002      	movs	r0, #2
+ 8000334:	f7ff ff32 	bl	800019c <custom_malloc>
+ 8000338:	60f8      	str	r0, [r7, #12]
+	for(int i = 0; i < 2; i++)
+ 800033a:	2300      	movs	r3, #0
+ 800033c:	61fb      	str	r3, [r7, #28]
+ 800033e:	e009      	b.n	8000354 <main+0x78>
+	{
+		myptr3[i] = 333;
+ 8000340:	69fb      	ldr	r3, [r7, #28]
+ 8000342:	009b      	lsls	r3, r3, #2
+ 8000344:	68fa      	ldr	r2, [r7, #12]
+ 8000346:	4413      	add	r3, r2
+ 8000348:	f240 124d 	movw	r2, #333	; 0x14d
+ 800034c:	601a      	str	r2, [r3, #0]
+	for(int i = 0; i < 2; i++)
+ 800034e:	69fb      	ldr	r3, [r7, #28]
+ 8000350:	3301      	adds	r3, #1
+ 8000352:	61fb      	str	r3, [r7, #28]
+ 8000354:	69fb      	ldr	r3, [r7, #28]
+ 8000356:	2b01      	cmp	r3, #1
+ 8000358:	ddf2      	ble.n	8000340 <main+0x64>
+	}
+
+	custom_free(myptr1);
+ 800035a:	6978      	ldr	r0, [r7, #20]
+ 800035c:	f7ff ff76 	bl	800024c <custom_free>
+
+	unsigned int *myptr4 = custom_malloc(5);
+ 8000360:	2005      	movs	r0, #5
+ 8000362:	f7ff ff1b 	bl	800019c <custom_malloc>
+ 8000366:	60b8      	str	r0, [r7, #8]
+	for(int i = 0; i < 5; i++)
+ 8000368:	2300      	movs	r3, #0
+ 800036a:	61bb      	str	r3, [r7, #24]
+ 800036c:	e009      	b.n	8000382 <main+0xa6>
+	{
+		myptr4[i] = 444;
+ 800036e:	69bb      	ldr	r3, [r7, #24]
+ 8000370:	009b      	lsls	r3, r3, #2
+ 8000372:	68ba      	ldr	r2, [r7, #8]
+ 8000374:	4413      	add	r3, r2
+ 8000376:	f44f 72de 	mov.w	r2, #444	; 0x1bc
+ 800037a:	601a      	str	r2, [r3, #0]
+	for(int i = 0; i < 5; i++)
+ 800037c:	69bb      	ldr	r3, [r7, #24]
+ 800037e:	3301      	adds	r3, #1
+ 8000380:	61bb      	str	r3, [r7, #24]
+ 8000382:	69bb      	ldr	r3, [r7, #24]
+ 8000384:	2b04      	cmp	r3, #4
+ 8000386:	ddf2      	ble.n	800036e <main+0x92>
+	}
+
+	custom_free(myptr3);
+ 8000388:	68f8      	ldr	r0, [r7, #12]
+ 800038a:	f7ff ff5f 	bl	800024c <custom_free>
+
+	unsigned int *myptr5 = custom_malloc(1);
+ 800038e:	2001      	movs	r0, #1
+ 8000390:	f7ff ff04 	bl	800019c <custom_malloc>
+ 8000394:	6078      	str	r0, [r7, #4]
+	myptr5[0] = 555;
+ 8000396:	687b      	ldr	r3, [r7, #4]
+ 8000398:	f240 222b 	movw	r2, #555	; 0x22b
+ 800039c:	601a      	str	r2, [r3, #0]
+
+	return 0;
+ 800039e:	2300      	movs	r3, #0
+}
+ 80003a0:	4618      	mov	r0, r3
+ 80003a2:	3728      	adds	r7, #40	; 0x28
+ 80003a4:	46bd      	mov	sp, r7
+ 80003a6:	bd80      	pop	{r7, pc}
+
+080003a8 <Reset_Handler>:
+
+  .section .text.Reset_Handler
+  .weak Reset_Handler
+  .type Reset_Handler, %function
+Reset_Handler:
+  ldr   r0, =_estack
+ 80003a8:	480d      	ldr	r0, [pc, #52]	; (80003e0 <LoopForever+0x2>)
+  mov   sp, r0          /* set stack pointer */
+ 80003aa:	4685      	mov	sp, r0
+/* Call the clock system intitialization function.*/
+  bl  SystemInit
+ 80003ac:	f3af 8000 	nop.w
+
+/* Copy the data segment initializers from flash to SRAM */
+  ldr r0, =_sdata
+ 80003b0:	480c      	ldr	r0, [pc, #48]	; (80003e4 <LoopForever+0x6>)
+  ldr r1, =_edata
+ 80003b2:	490d      	ldr	r1, [pc, #52]	; (80003e8 <LoopForever+0xa>)
+  ldr r2, =_sidata
+ 80003b4:	4a0d      	ldr	r2, [pc, #52]	; (80003ec <LoopForever+0xe>)
+  movs r3, #0
+ 80003b6:	2300      	movs	r3, #0
+  b LoopCopyDataInit
+ 80003b8:	e002      	b.n	80003c0 <LoopCopyDataInit>
+
+080003ba <CopyDataInit>:
+
+CopyDataInit:
+  ldr r4, [r2, r3]
+ 80003ba:	58d4      	ldr	r4, [r2, r3]
+  str r4, [r0, r3]
+ 80003bc:	50c4      	str	r4, [r0, r3]
+  adds r3, r3, #4
+ 80003be:	3304      	adds	r3, #4
+
+080003c0 <LoopCopyDataInit>:
+
+LoopCopyDataInit:
+  adds r4, r0, r3
+ 80003c0:	18c4      	adds	r4, r0, r3
+  cmp r4, r1
+ 80003c2:	428c      	cmp	r4, r1
+  bcc CopyDataInit
+ 80003c4:	d3f9      	bcc.n	80003ba <CopyDataInit>
+
+/* Zero fill the bss segment. */
+  ldr r2, =_sbss
+ 80003c6:	4a0a      	ldr	r2, [pc, #40]	; (80003f0 <LoopForever+0x12>)
+  ldr r4, =_ebss
+ 80003c8:	4c0a      	ldr	r4, [pc, #40]	; (80003f4 <LoopForever+0x16>)
+  movs r3, #0
+ 80003ca:	2300      	movs	r3, #0
+  b LoopFillZerobss
+ 80003cc:	e001      	b.n	80003d2 <LoopFillZerobss>
+
+080003ce <FillZerobss>:
+
+FillZerobss:
+  str  r3, [r2]
+ 80003ce:	6013      	str	r3, [r2, #0]
+  adds r2, r2, #4
+ 80003d0:	3204      	adds	r2, #4
+
+080003d2 <LoopFillZerobss>:
+
+LoopFillZerobss:
+  cmp r2, r4
+ 80003d2:	42a2      	cmp	r2, r4
+  bcc FillZerobss
+ 80003d4:	d3fb      	bcc.n	80003ce <FillZerobss>
+
+/* Call static constructors */
+  bl __libc_init_array
+ 80003d6:	f000 f811 	bl	80003fc <__libc_init_array>
+/* Call the application's entry point.*/
+  bl main
+ 80003da:	f7ff ff7f 	bl	80002dc <main>
+
+080003de <LoopForever>:
+
+LoopForever:
+    b LoopForever
+ 80003de:	e7fe      	b.n	80003de <LoopForever>
+  ldr   r0, =_estack
+ 80003e0:	20005000 	.word	0x20005000
+  ldr r0, =_sdata
+ 80003e4:	20000000 	.word	0x20000000
+  ldr r1, =_edata
+ 80003e8:	20000000 	.word	0x20000000
+  ldr r2, =_sidata
+ 80003ec:	08000474 	.word	0x08000474
+  ldr r2, =_sbss
+ 80003f0:	20000000 	.word	0x20000000
+  ldr r4, =_ebss
+ 80003f4:	2000009c 	.word	0x2000009c
+
+080003f8 <ADC1_2_IRQHandler>:
+ * @retval : None
+*/
+  .section .text.Default_Handler,"ax",%progbits
+Default_Handler:
+Infinite_Loop:
+  b Infinite_Loop
+ 80003f8:	e7fe      	b.n	80003f8 <ADC1_2_IRQHandler>
+	...
+
+080003fc <__libc_init_array>:
+ 80003fc:	b570      	push	{r4, r5, r6, lr}
+ 80003fe:	2600      	movs	r6, #0
+ 8000400:	4d0c      	ldr	r5, [pc, #48]	; (8000434 <__libc_init_array+0x38>)
+ 8000402:	4c0d      	ldr	r4, [pc, #52]	; (8000438 <__libc_init_array+0x3c>)
+ 8000404:	1b64      	subs	r4, r4, r5
+ 8000406:	10a4      	asrs	r4, r4, #2
+ 8000408:	42a6      	cmp	r6, r4
+ 800040a:	d109      	bne.n	8000420 <__libc_init_array+0x24>
+ 800040c:	f000 f822 	bl	8000454 <_init>
+ 8000410:	2600      	movs	r6, #0
+ 8000412:	4d0a      	ldr	r5, [pc, #40]	; (800043c <__libc_init_array+0x40>)
+ 8000414:	4c0a      	ldr	r4, [pc, #40]	; (8000440 <__libc_init_array+0x44>)
+ 8000416:	1b64      	subs	r4, r4, r5
+ 8000418:	10a4      	asrs	r4, r4, #2
+ 800041a:	42a6      	cmp	r6, r4
+ 800041c:	d105      	bne.n	800042a <__libc_init_array+0x2e>
+ 800041e:	bd70      	pop	{r4, r5, r6, pc}
+ 8000420:	f855 3b04 	ldr.w	r3, [r5], #4
+ 8000424:	4798      	blx	r3
+ 8000426:	3601      	adds	r6, #1
+ 8000428:	e7ee      	b.n	8000408 <__libc_init_array+0xc>
+ 800042a:	f855 3b04 	ldr.w	r3, [r5], #4
+ 800042e:	4798      	blx	r3
+ 8000430:	3601      	adds	r6, #1
+ 8000432:	e7f2      	b.n	800041a <__libc_init_array+0x1e>
+ 8000434:	0800046c 	.word	0x0800046c
+ 8000438:	0800046c 	.word	0x0800046c
+ 800043c:	0800046c 	.word	0x0800046c
+ 8000440:	08000470 	.word	0x08000470
+
+08000444 <memset>:
+ 8000444:	4603      	mov	r3, r0
+ 8000446:	4402      	add	r2, r0
+ 8000448:	4293      	cmp	r3, r2
+ 800044a:	d100      	bne.n	800044e <memset+0xa>
+ 800044c:	4770      	bx	lr
+ 800044e:	f803 1b01 	strb.w	r1, [r3], #1
+ 8000452:	e7f9      	b.n	8000448 <memset+0x4>
+
+08000454 <_init>:
+ 8000454:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+ 8000456:	bf00      	nop
+ 8000458:	bcf8      	pop	{r3, r4, r5, r6, r7}
+ 800045a:	bc08      	pop	{r3}
+ 800045c:	469e      	mov	lr, r3
+ 800045e:	4770      	bx	lr
+
+08000460 <_fini>:
+ 8000460:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+ 8000462:	bf00      	nop
+ 8000464:	bcf8      	pop	{r3, r4, r5, r6, r7}
+ 8000466:	bc08      	pop	{r3}
+ 8000468:	469e      	mov	lr, r3
+ 800046a:	4770      	bx	lr
